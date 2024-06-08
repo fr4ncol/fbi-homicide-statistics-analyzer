@@ -3,40 +3,40 @@ import csv
 # Function to read mapping files and return a dictionary
 def read_mapping_file(filename):
     mapping = {}
-    with open(filename, 'r', encoding='utf-8') as file:
+    with open(filename, 'r', encoding='latin-1') as file:
         reader = csv.DictReader(file, delimiter=';')
         for row in reader:
-            mapping[row['number']] = row['state']  # For state mapping
-    return mapping
-
-def read_location_type_file(filename):
-    mapping = {}
-    with open(filename, 'r', encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        for row in reader:
-            mapping[row['code']] = row['description']  # For location type mapping
+            mapping[row["code"]] = row["translation"]
     return mapping
 
 # Read the state and location type mappings
-state_mapping = read_mapping_file('mappings\state_mapping.csv')
-location_type_mapping = read_location_type_file('mappings\location_type_mapping.csv')
+state_mapping = read_mapping_file('mappings\\state_mapping.csv')
+location_type_mapping = read_mapping_file('mappings\\location_type_mapping.csv')
+situation_mapping = read_mapping_file('mappings\\situation_mapping.csv')
+age_mapping = read_mapping_file("mappings\\age_mapping.csv")
+sex_mapping = read_mapping_file("mappings\\sex_mapping.csv")
+race_mapping = read_mapping_file("mappings\\race_mapping.csv")
+ethnic_origin_mapping = read_mapping_file("mappings\\ethnic_origin_mapping.csv")
+weapon_mapping = read_mapping_file("mappings\\weapon_mapping.csv")
+circumstances_mapping = read_mapping_file("mappings\\circumstances_mapping.csv")
+sub_circumstances_mapping = read_mapping_file("mappings\\sub_circumstances_mapping.csv")
+relationship_mapping = read_mapping_file("mappings\\relationship_mapping.csv")
+county_mapping = read_mapping_file("mappings\\county_codes_mapping.csv")
 
 # Define the positions and their respective fields
 fields = [
     ("numer_stanu", 2, 3),
     ("kod_agencji", 4, 10),
-    ("typ_miejsca_zbrodni", 11, 11),
-    ("podkategoria_miejsca_zbrodni", 12, 12),
+    ("typ_miejsca_zbrodni", 11, 12),
     ("rok", 14, 15),
     ("populacja", 16, 24),
-    ("kod_hrabstwa", 25, 27),
-    ("numer_msa", 28, 30),
-    ("identyfikacja_msa", 31, 31),
+    ("hrabstwo", 25, 27),
+    #("numer_msa", 28, 30),
+    #("identyfikacja_msa", 31, 31),
     ("nazwa_agencji", 32, 55),
     ("miesiac_przestepstwa", 62, 63),
-    ("ostatni_update", 64, 69),
+    #("ostatni_update", 64, 69),
     ("typ_zabojstwa", 71, 71),
-    ("numer_zdarzenia", 72, 74),
     ("sytuacja", 75, 75),
     ("wiek_ofiary", 76, 77),
     ("plec_ofiary", 78, 78),
@@ -50,10 +50,11 @@ fields = [
     ("relacja_ofiary_wzledem_sprawcy", 88, 89),
     ("okolicznosc", 90, 91),
     ("podokolicznosc", 92, 92),
-    ("ilosc_ofiar", 93, 95),
-    ("ilosc_sprawcow", 96, 98),
-    ("opis_ofiar_innych_niz_pierwsza", 99, 148),
-    ("opis_sprawcow_innych_niz_pierwszy", 149, 268)
+    ("ilosc_dodatkowych_ofiar", 93, 95),
+    ("ilosc_dodatkowych_sprawcow", 96, 98),
+    # @todo jak rozkminimy jak to zrobić
+    #("opis_ofiar_innych_niz_pierwsza", 99, 148),
+    #("opis_sprawcow_innych_niz_pierwszy", 149, 268)
 ]
 
 # Function to parse each line based on the defined positions
@@ -65,11 +66,46 @@ def parse_line(line):
             value = state_mapping.get(value, value)  # Translate state number to name
         elif field == "typ_miejsca_zbrodni":
             value = location_type_mapping.get(value, value)  # Translate crime location type
+        elif field == "sytuacja":
+            value = situation_mapping.get(value, value)
+        elif field == "wiek_ofiary" or field =="wiek_sprawcy":
+            value = age_mapping.get(value, value)
+        elif field == "rasa_sprawcy" or field == "rasa_ofiary":
+            value = race_mapping.get(value, value)
+        elif field == "plec_ofiary" or field == "plec_sprawcy":
+            value = sex_mapping.get(value, value)
+        elif field == "pochodzenie_etniczne_sprawcy" or field == "pochodzenie_etniczne_ofiary":
+            value = ethnic_origin_mapping.get(value, value)
+        elif field == "uzyta_bron":
+            value = weapon_mapping.get(value, value)
+        elif field == "okolicznosc":
+            value = circumstances_mapping.get(value, value)
+        elif field == "podokolicznosc":
+            value = sub_circumstances_mapping.get(value, value)
+        elif field == "relacja_ofiary_wzledem_sprawcy":
+            value = relationship_mapping.get(value, value)
+        elif field == "populacja" or field == "ilosc_dodatkowych_ofiar" or field == "ilosc_dodatkowych_sprawcow":
+            value = int(value)
+        elif field == "typ_zabojstwa":
+            if value == "A":
+                value = "Murder and Nonnegligent Manslaughter"
+            if value == "B":
+                value = "Manslaughter by Negligence"
+        elif field == "rok":
+            if int(value) > 25:
+                value = int(value)+1900
+            else:
+                value = int(value)+2000
+        elif field == "hrabstwo":
+            value = int(value)
+            value = str(value)
+            value = county_mapping.get(value, value)
+               
         data[field] = value
     return data
 
 # Read the input file, parse the data, and write to a CSV file
-input_filename = '2022_SHR_NATIONAL_MASTER_FILE.txt'
+input_filename = '2021_SHR_NATIONAL_MASTER_FILE.txt'
 output_filename = 'output_data.csv'
 
 with open(input_filename, 'r') as infile, open(output_filename, 'w', newline='', encoding='utf-8') as outfile:

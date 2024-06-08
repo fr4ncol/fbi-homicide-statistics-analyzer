@@ -1,0 +1,40 @@
+code;translation
+02;Rape
+03;Robbery
+05;Burglary
+06;Larceny
+07;Motor Vehicle Theft
+09;Arson
+10;Prostitution and Commercialized Vice
+17;Other Sex Offenses
+32;Abortion
+18;Narcotic Drug Laws
+19;Gambling
+26;Other - not specified
+40;Lover's Triangle
+41;Child Killed by Babysitter
+42;Brawl Due to Influence of Alcohol
+43;Brawl Due to Influence of Narcotics
+44;Argument Over Money or Property
+45;Other Arguments
+46;Gangland Killings
+47;Juvenile Gang Killings
+48;Institutional Killings
+49;Sniper Attack
+60;Other
+70;All Suspected Felony Type
+80;Felon Killed by Private Citizen
+81;Felon Killed by Police
+A;Felon Attacked Police Officer
+B;Felon Attacked Fellow Police Officer
+C;Felon Attacked a Civilian
+D;Felon Attempted Flight From a Crime
+E;Felon Killed in Commission of a Crime
+F;Felon Resisted Arrest
+G;Not Enough Information to Determine
+99;All instances where the facts provided do not permit determination of circumstances
+50;Victim Shot in Hunting Accident
+51;Gun-Cleaning Death - Other Than Self-Inflicted
+52;Children Playing With Gun
+53;Other Negligent Handling of Gun Which Results in Death of Another
+59;All Other Manslaughter by Negligence Except Traffic Deaths

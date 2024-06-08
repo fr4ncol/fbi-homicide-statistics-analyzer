@@ -1,4 +1,5 @@
 import csv
+import os
 
 # Function to read mapping files and return a dictionary
 def read_mapping_file(filename):
@@ -31,11 +32,8 @@ fields = [
     ("rok", 14, 15),
     ("populacja", 16, 24),
     ("hrabstwo", 25, 27),
-    #("numer_msa", 28, 30),
-    #("identyfikacja_msa", 31, 31),
     ("nazwa_agencji", 32, 55),
     ("miesiac_przestepstwa", 62, 63),
-    #("ostatni_update", 64, 69),
     ("typ_zabojstwa", 71, 71),
     ("sytuacja", 75, 75),
     ("wiek_ofiary", 76, 77),
@@ -52,9 +50,6 @@ fields = [
     ("podokolicznosc", 92, 92),
     ("ilosc_dodatkowych_ofiar", 93, 95),
     ("ilosc_dodatkowych_sprawcow", 96, 98),
-    # @todo jak rozkminimy jak to zrobić
-    #("opis_ofiar_innych_niz_pierwsza", 99, 148),
-    #("opis_sprawcow_innych_niz_pierwszy", 149, 268)
 ]
 
 # Function to parse each line based on the defined positions
@@ -85,35 +80,48 @@ def parse_line(line):
         elif field == "relacja_ofiary_wzledem_sprawcy":
             value = relationship_mapping.get(value, value)
         elif field == "populacja" or field == "ilosc_dodatkowych_ofiar" or field == "ilosc_dodatkowych_sprawcow":
-            value = int(value)
+            try:
+                value = int(value)
+            except:
+                value=""
         elif field == "typ_zabojstwa":
             if value == "A":
                 value = "Murder and Nonnegligent Manslaughter"
             if value == "B":
                 value = "Manslaughter by Negligence"
         elif field == "rok":
-            if int(value) > 25:
-                value = int(value)+1900
-            else:
-                value = int(value)+2000
+            try:
+                if int(value) > 25:
+                    value = int(value)+1900
+                else:
+                    value = int(value)+2000
+            except:
+                value=""
         elif field == "hrabstwo":
-            value = int(value)
-            value = str(value)
-            value = county_mapping.get(value, value)
+            try:
+                value = int(value)
+                value = str(value)
+                value = county_mapping.get(value, value)
+            except:
+                value = ""
                
         data[field] = value
     return data
 
 # Read the input file, parse the data, and write to a CSV file
-input_filename = '2021_SHR_NATIONAL_MASTER_FILE.txt'
 output_filename = 'output_data.csv'
+directory_path = 'resources'
+files = os.listdir(directory_path)
 
-with open(input_filename, 'r') as infile, open(output_filename, 'w', newline='', encoding='utf-8') as outfile:
+with open(output_filename, 'w', newline='', encoding='utf-8') as outfile:
     writer = csv.DictWriter(outfile, fieldnames=[field[0] for field in fields])
     writer.writeheader()
-
-    for line in infile:
-        parsed_data = parse_line(line)
-        writer.writerow(parsed_data)
+    for filename in files:
+        file_path = os.path.join(directory_path, filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'r') as infile:
+               for line in infile:
+                    parsed_data = parse_line(line)
+                    writer.writerow(parsed_data)
 
 print(f"Data has been successfully written to {output_filename}")

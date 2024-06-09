@@ -10,7 +10,7 @@ def read_mapping_file(filename):
             mapping[row["code"]] = row["translation"]
     return mapping
 
-# Read the state and location type mappings
+# Declaration of mapping dictionaries
 state_mapping = read_mapping_file('mappings\\state_mapping.csv')
 location_type_mapping = read_mapping_file('mappings\\location_type_mapping.csv')
 situation_mapping = read_mapping_file('mappings\\situation_mapping.csv')
@@ -24,7 +24,7 @@ sub_circumstances_mapping = read_mapping_file("mappings\\sub_circumstances_mappi
 relationship_mapping = read_mapping_file("mappings\\relationship_mapping.csv")
 county_mapping = read_mapping_file("mappings\\county_codes_mapping.csv")
 
-# Define the positions and their respective fields
+# Definition of positions used to the decode data in datasets
 fields = [
     ("numer_stanu", 2, 3),
     ("kod_agencji", 4, 10),
@@ -58,9 +58,9 @@ def parse_line(line):
     for field, start, end in fields:
         value = line[start-1:end].strip()
         if field == "numer_stanu":
-            value = state_mapping.get(value, value)  # Translate state number to name
+            value = state_mapping.get(value, value) 
         elif field == "typ_miejsca_zbrodni":
-            value = location_type_mapping.get(value, value)  # Translate crime location type
+            value = location_type_mapping.get(value, value)
         elif field == "sytuacja":
             value = situation_mapping.get(value, value)
         elif field == "wiek_ofiary" or field =="wiek_sprawcy":
@@ -108,7 +108,7 @@ def parse_line(line):
         data[field] = value
     return data
 
-# Read the input file, parse the data, and write to a CSV file
+# Read the input files, parse the data, and write to a CSV file
 output_filename = 'output_data.csv'
 directory_path = 'resources'
 files = os.listdir(directory_path)
